@@ -54,7 +54,7 @@ function handleLogin(event) {
     if (user) {
         // Store logged in user
         localStorage.setItem('currentUser', JSON.stringify(user));
-        window.location.href = 'dashboard.php';
+        window.location.href = 'dashboard.html';
     } else {
         alert('Invalid credentials or user does not exist. Please sign up first!');
     }

@@ -1,91 +1,45 @@
-# AquaDTrack - Water Tracking Application
+# AquaTrack
 
-A modern water tracking application built with Node.js, Express, and MongoDB.
+A water tracking web application that helps users monitor their daily water intake and set reminders.
 
 ## Features
 
-- User authentication (signup/login)
+- User authentication (local storage based)
 - Water intake tracking
-- Daily water goals
-- Reminders
-- Profile management
-- Statistics and progress tracking
+- Daily water consumption goals
+- Reminders for water intake
+- Responsive design
 
-## Prerequisites
+## Technologies Used
 
-- Node.js (v14 or higher)
-- MongoDB database
-- Vercel account (for deployment)
+- HTML5
+- CSS3
+- JavaScript
+- Font Awesome Icons
+- Local Storage for data persistence
 
 ## Setup
 
 1. Clone the repository:
 ```bash
-git clone <your-repo-url>
-cd aquadtrack
+git clone https://github.com/Ke12in/AquaTrack.git
 ```
 
-2. Install dependencies:
-```bash
-npm install
-```
+2. Open `index.html` in your web browser
 
-3. Create a `.env` file in the root directory with the following variables:
-```
-MONGODB_URI=your_mongodb_uri
-JWT_SECRET=your_jwt_secret
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your_email@gmail.com
-SMTP_PASS=your_email_password
-NODE_ENV=development
-```
+No server or database setup required! The application works completely offline.
 
-4. Start the development server:
-```bash
-npm run dev
-```
+## Usage
 
-## Deployment on Vercel
+1. Create an account using the signup page
+2. Log in with your credentials
+3. Start tracking your water intake
+4. Set reminders for regular water consumption
 
-1. Push your code to GitHub
+## Live Demo
 
-2. Connect your GitHub repository to Vercel
-
-3. Configure the following environment variables in Vercel:
-   - MONGODB_URI
-   - JWT_SECRET
-   - SMTP_HOST
-   - SMTP_PORT
-   - SMTP_USER
-   - SMTP_PASS
-   - NODE_ENV=production
-
-4. Deploy!
-
-## API Endpoints
-
-### Authentication
-- POST /api/auth/register - Register a new user
-- POST /api/auth/login - Login user
-
-### Water Tracking
-- POST /api/water - Add water intake
-- GET /api/water - Get water intake history
-- PUT /api/water/goal - Update water goal
-- GET /api/water/stats - Get water intake statistics
-
-### Reminders
-- POST /api/reminders - Create a reminder
-- GET /api/reminders - Get user's reminders
-- PUT /api/reminders/:id - Update a reminder
-- DELETE /api/reminders/:id - Delete a reminder
-
-### Profile
-- GET /api/profile - Get user profile
-- PUT /api/profile - Update user profile
-- PUT /api/profile/password - Update user password
+Visit the live demo at: [https://ke12in.github.io/AquaTrack](https://ke12in.github.io/AquaTrack)
 
 ## License
 
-MIT 
+This project is open source and available under the [MIT License](LICENSE). 

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AquaTrack - Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/fontawesome/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="dashboard-nav">
+            <div class="logo">
+                <i class="fas fa-tint"></i>
+                <h1>AquaTrack</h1>
+            </div>
+            <div class="user-info">
+                <span id="userName"></span>
+                <button onclick="logout()" class="btn-logout">Logout</button>
+            </div>
+        </nav>
+
+        <main class="dashboard-main">
+            <div class="dashboard-grid">
+                <!-- Water Tracking Section -->
+                <div class="dashboard-card water-tracker">
+                    <h2>Today's Water Intake</h2>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="waterProgress">
+                            <div class="progress" style="width: 0%"></div>
+                        </div>
+                        <div class="water-stats">
+                            <span id="waterAmount">0</span>/<span id="waterGoal">2000</span> ml
+                        </div>
+                    </div>
+                    <div class="add-water">
+                        <input type="number" id="waterInput" placeholder="Enter amount in ml" min="0">
+                        <button onclick="addWater()" class="btn-add">Add Water</button>
+                    </div>
+                </div>
+
+                <!-- Daily Stats Section -->
+                <div class="dashboard-card stats">
+                    <h2>Daily Statistics</h2>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <i class="fas fa-glass-water"></i>
+                            <div class="stat-info">
+                                <span class="stat-value" id="todayIntake">0</span>
+                                <span class="stat-label">Today's Intake</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-calendar-check"></i>
+                            <div class="stat-info">
+                                <span class="stat-value" id="goalCompletion">0%</span>
+                                <span class="stat-label">Goal Completion</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-clock"></i>
+                            <div class="stat-info">
+                                <span class="stat-value" id="lastDrink">-</span>
+                                <span class="stat-label">Last Drink</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reminders Section -->
+                <div class="dashboard-card reminders">
+                    <h2>Water Reminders</h2>
+                    <div class="reminder-list" id="reminderList">
+                        <!-- Reminders will be added here dynamically -->
+                    </div>
+                    <div class="add-reminder">
+                        <input type="time" id="reminderTime">
+                        <button onclick="addReminder()" class="btn-add">Add Reminder</button>
+                    </div>
+                </div>
+
+                <!-- History Section -->
+                <div class="dashboard-card history">
+                    <h2>Drinking History</h2>
+                    <div class="history-list" id="historyList">
+                        <!-- History items will be added here dynamically -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        // Check if user is logged in
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Display user name
+            document.getElementById('userName').textContent = currentUser.fullname;
+            
+            // Load all data
+            loadWaterData();
+            loadReminders();
+            loadHistory();
+        });
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Water tracking functions
+        function loadWaterData() {
+            const waterData = JSON.parse(localStorage.getItem('waterData')) || {
+                today: new Date().toDateString(),
+                amount: 0,
+                goal: 2000,
+                history: []
+            };
+
+            // Reset if it's a new day
+            if (waterData.today !== new Date().toDateString()) {
+                waterData.today = new Date().toDateString();
+                waterData.amount = 0;
+                waterData.history = [];
+            }
+
+            updateWaterDisplay(waterData);
+        }
+
+        function addWater() {
+            const input = document.getElementById('waterInput');
+            const amount = parseInt(input.value);
+            
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+
+            const waterData = JSON.parse(localStorage.getItem('waterData')) || {
+                today: new Date().toDateString(),
+                amount: 0,
+                goal: 2000,
+                history: []
+            };
+
+            const now = new Date();
+            waterData.amount += amount;
+            waterData.history.push({
+                amount,
+                time: now.toLocaleTimeString(),
+                timestamp: now.getTime()
+            });
+
+            localStorage.setItem('waterData', JSON.stringify(waterData));
+            
+            updateWaterDisplay(waterData);
+            loadHistory();
+            input.value = '';
+        }
+
+        function updateWaterDisplay(waterData) {
+            const progress = (waterData.amount / waterData.goal) * 100;
+            document.querySelector('.progress').style.width = `${Math.min(progress, 100)}%`;
+            document.getElementById('waterAmount').textContent = waterData.amount;
+            document.getElementById('waterGoal').textContent = waterData.goal;
+            document.getElementById('todayIntake').textContent = waterData.amount + ' ml';
+            document.getElementById('goalCompletion').textContent = Math.min(Math.round(progress), 100) + '%';
+            
+            if (waterData.history.length > 0) {
+                const lastDrink = waterData.history[waterData.history.length - 1];
+                document.getElementById('lastDrink').textContent = lastDrink.time;
+            }
+        }
+
+        // Reminder functions
+        function loadReminders() {
+            const reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+            const reminderList = document.getElementById('reminderList');
+            reminderList.innerHTML = '';
+
+            reminders.forEach((reminder, index) => {
+                const reminderElement = document.createElement('div');
+                reminderElement.className = 'reminder-item';
+                reminderElement.innerHTML = `
+                    <div class="reminder-time">
+                        <i class="fas fa-bell"></i>
+                        <span>${reminder.time}</span>
+                    </div>
+                    <button onclick="deleteReminder(${index})" class="btn-delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                reminderList.appendChild(reminderElement);
+            });
+        }
+
+        function addReminder() {
+            const timeInput = document.getElementById('reminderTime');
+            const time = timeInput.value;
+            
+            if (!time) {
+                alert('Please select a time');
+                return;
+            }
+
+            const reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+            reminders.push({ time });
+            localStorage.setItem('reminders', JSON.stringify(reminders));
+            
+            loadReminders();
+            timeInput.value = '';
+        }
+
+        function deleteReminder(index) {
+            const reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+            reminders.splice(index, 1);
+            localStorage.setItem('reminders', JSON.stringify(reminders));
+            loadReminders();
+        }
+
+        // History functions
+        function loadHistory() {
+            const waterData = JSON.parse(localStorage.getItem('waterData')) || {
+                history: []
+            };
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+
+            waterData.history.slice().reverse().forEach(entry => {
+                const historyElement = document.createElement('div');
+                historyElement.className = 'history-item';
+                historyElement.innerHTML = `
+                    <div class="history-info">
+                        <i class="fas fa-glass-water"></i>
+                        <span>${entry.amount} ml</span>
+                    </div>
+                    <span class="history-time">${entry.time}</span>
+                `;
+                historyList.appendChild(historyElement);
+            });
+        }
+    </script>
+</body>
+</html> 
