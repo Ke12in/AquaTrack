@@ -1,5 +1,18 @@
 {
+  "name": "aquatrack",
+  "version": "1.0.0",
+  "description": "Water tracking application",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
   "dependencies": {
-    "firebase": "^11.8.1"
+    "mongodb": "^5.0.0",
+    "bcryptjs": "^2.4.3",
+    "next": "^13.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }
